@@ -6,7 +6,7 @@ export const WORK_DIR = `/home/${WORK_DIR_NAME}`;
 export const MODIFICATIONS_TAG_NAME = 'bolt_file_modifications';
 export const MODEL_REGEX = /^\[Model: (.*?)\]\n\n/;
 export const PROVIDER_REGEX = /\[Provider: (.*?)\]\n\n/;
-export const DEFAULT_MODEL = 'claude-3-5-sonnet-latest';
+export const DEFAULT_MODEL = 'claude-opus-4-20250514';
 export const PROMPT_COOKIE_KEY = 'cachedPrompt';
 export const TOOL_EXECUTION_APPROVAL = {
   APPROVE: 'Yes, approved.',
@@ -143,5 +143,13 @@ export const STARTER_TEMPLATES: Template[] = [
     githubRepo: 'xKevIsDev/solidjs-ts-tw',
     tags: ['solidjs'],
     icon: 'i-bolt:solidjs',
+  },
+  {
+    name: 'ERPNext',
+    label: 'ERPNext',
+    description: 'ERPNext starter template for building enterprise resource planning systems using Frappe framework',
+    githubRepo: 'frappe/erpnext',
+    tags: ['erpnext', 'erp', 'frappe', 'python', 'enterprise', 'business'],
+    icon: 'i-bolt:erpnext',
   },
 ];

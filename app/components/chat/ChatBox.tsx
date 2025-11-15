@@ -102,7 +102,8 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
         <rect className={classNames(styles.PromptEffectLine)} pathLength="100" strokeLinecap="round"></rect>
         <rect className={classNames(styles.PromptShine)} x="48" y="24" width="70" height="1"></rect>
       </svg>
-      <div>
+      {/* Model selector and API key manager hidden for SaaS */}
+      <div className="hidden">
         <ClientOnly>
           {() => (
             <div className={props.isModelSettingsCollapsed ? 'hidden' : ''}>
@@ -236,7 +237,7 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
             minHeight: props.TEXTAREA_MIN_HEIGHT,
             maxHeight: props.TEXTAREA_MAX_HEIGHT,
           }}
-          placeholder={props.chatMode === 'build' ? 'How can Bolt help you today?' : 'What would you like to discuss?'}
+          placeholder={props.chatMode === 'build' ? "What are your business' needs" : 'What would you like to discuss?'}
           translate="no"
         />
         <ClientOnly>
@@ -304,14 +305,10 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
                 {props.chatMode === 'discuss' ? <span>Discuss</span> : <span />}
               </IconButton>
             )}
+            {/* Model Settings button hidden for SaaS */}
             <IconButton
               title="Model Settings"
-              className={classNames('transition-all flex items-center gap-1', {
-                'bg-bolt-elements-item-backgroundAccent text-bolt-elements-item-contentAccent':
-                  props.isModelSettingsCollapsed,
-                'bg-bolt-elements-item-backgroundDefault text-bolt-elements-item-contentDefault':
-                  !props.isModelSettingsCollapsed,
-              })}
+              className="hidden"
               onClick={() => props.setIsModelSettingsCollapsed(!props.isModelSettingsCollapsed)}
               disabled={!props.providerList || props.providerList.length === 0}
             >

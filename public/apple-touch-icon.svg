@@ -1,15 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
   <!-- Background black -->
-  <rect width="240" height="120" fill="#000000"/>
+  <rect width="180" height="180" fill="#000000"/>
   
-  <!-- Stylized "EK" emblem in upper half - very angular and geometric -->
-  <g transform="translate(120, 28)">
+  <!-- Stylized "EK" emblem centered - very angular and geometric -->
+  <g transform="translate(90, 70)">
     <!-- E letter - sharp geometric lines, angular design -->
     <path d="M -42 -20 L -42 20 L -30 20 L -30 8 L -18 8 L -18 2 L -30 2 L -30 -2 L -18 -2 L -18 -8 L -30 -8 L -30 -20 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
     <!-- K letter - sharing right bar with E, very angular diagonal strokes -->
     <path d="M -18 -20 L -18 20 L -6 20 L -6 2 L 2 -14 L 14 -20 L 10 -14 L 2 2 L 10 14 L 14 8 L 2 2 L 10 20 L -6 20 L -6 2 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
   </g>
   
-  <!-- "EKKO" text in lower half - bold uppercase sans-serif, clean and modern -->
-  <text x="120" y="92" font-family="'Arial', 'Helvetica Neue', Helvetica, sans-serif" font-size="30" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="4">EKKO</text>
+  <!-- "EKKO" text below emblem - bold uppercase sans-serif, clean and modern -->
+  <text x="90" y="130" font-family="'Arial', 'Helvetica Neue', Helvetica, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">EKKO</text>
 </svg>
+

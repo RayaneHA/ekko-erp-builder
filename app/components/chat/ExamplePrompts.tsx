@@ -1,12 +1,12 @@
 import React from 'react';
 
 const EXAMPLE_PROMPTS = [
-  { text: 'Create a mobile app about bolt.diy' },
-  { text: 'Build a todo app in React using Tailwind' },
-  { text: 'Build a simple blog using Astro' },
-  { text: 'Create a cookie consent form using Material UI' },
-  { text: 'Make a space invaders game' },
-  { text: 'Make a Tic Tac Toe game in html, css and js only' },
+  { text: 'I run a small retail store and need to track inventory, sales, and customers' },
+  { text: 'Create an ERP for my restaurant to manage orders, menu items, and staff schedules' },
+  { text: 'I need an ERP for my consulting business to track projects, invoices, and client payments' },
+  { text: 'Build an ERP for my manufacturing company to manage production, suppliers, and quality control' },
+  { text: 'Create a custom ERP for my e-commerce business to handle products, orders, and shipping' },
+  { text: 'I need an ERP for my service business to manage appointments, invoices, and customer history' },
 ];
 
 export function ExamplePrompts(sendMessage?: { (event: React.UIEvent, messageInput?: string): void | undefined }) {

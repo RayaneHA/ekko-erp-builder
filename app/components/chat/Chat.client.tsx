@@ -103,12 +103,13 @@ export const ChatImpl = memo(
     const { activeProviders, promptId, autoSelectTemplate, contextOptimizationEnabled } = useSettings();
     const [llmErrorAlert, setLlmErrorAlert] = useState<LlmErrorAlertType | undefined>(undefined);
     const [model, setModel] = useState(() => {
-      const savedModel = Cookies.get('selectedModel');
-      return savedModel || DEFAULT_MODEL;
+      // Force Claude 4 Opus as default model for SaaS
+      return DEFAULT_MODEL;
     });
     const [provider, setProvider] = useState(() => {
-      const savedProvider = Cookies.get('selectedProvider');
-      return (PROVIDER_LIST.find((p) => p.name === savedProvider) || DEFAULT_PROVIDER) as ProviderInfo;
+      // Force Anthropic as default provider for SaaS
+      const anthropicProvider = PROVIDER_LIST.find((p) => p.name === 'Anthropic');
+      return (anthropicProvider || DEFAULT_PROVIDER) as ProviderInfo;
     });
     const { showChat } = useStore(chatStore);
     const [animationScope, animate] = useAnimate();

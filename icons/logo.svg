@@ -1,4 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-  <rect width="16" height="16" rx="2" fill="#1389fd" />
-  <path d="M7.398 9.091h-3.58L10.364 2 8.602 6.909h3.58L5.636 14l1.762-4.909Z" fill="#fff" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Background black -->
+  <rect width="120" height="120" fill="#000000"/>
+  
+  <!-- Stylized "EK" emblem centered - very angular and geometric -->
+  <g transform="translate(60, 60)">
+    <!-- E letter - sharp geometric lines, angular design -->
+    <path d="M -42 -20 L -42 20 L -30 20 L -30 8 L -18 8 L -18 2 L -30 2 L -30 -2 L -18 -2 L -18 -8 L -30 -8 L -30 -20 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+    <!-- K letter - sharing right bar with E, very angular diagonal strokes -->
+    <path d="M -18 -20 L -18 20 L -6 20 L -6 2 L 2 -14 L 14 -20 L 10 -14 L 2 2 L 10 14 L 14 8 L 2 2 L 10 20 L -6 20 L -6 2 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.5"/>
+  </g>
 </svg>

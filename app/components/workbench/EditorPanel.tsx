@@ -38,6 +38,7 @@ interface EditorPanelProps {
   onFileSelect?: (value?: string) => void;
   onFileSave?: OnEditorSave;
   onFileReset?: () => void;
+  isLoading?: boolean;
 }
 
 const DEFAULT_EDITOR_SIZE = 100 - DEFAULT_TERMINAL_SIZE;
@@ -57,6 +58,7 @@ export const EditorPanel = memo(
     onEditorScroll,
     onFileSave,
     onFileReset,
+    isLoading = false,
   }: EditorPanelProps) => {
     renderLogger.trace('EditorPanel');
 
@@ -81,7 +83,7 @@ export const EditorPanel = memo(
     }, [editorDocument, unsavedFiles]);
 
     return (
-      <PanelGroup direction="vertical">
+      <PanelGroup direction="vertical" className={classNames('relative', isLoading && 'blur-sm transition-all duration-300')}>
         <Panel defaultSize={showTerminal ? DEFAULT_EDITOR_SIZE : 100} minSize={20}>
           <PanelGroup direction="horizontal">
             <Panel defaultSize={20} minSize={15} collapsible className="border-r border-bolt-elements-borderColor">

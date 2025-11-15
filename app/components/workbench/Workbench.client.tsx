@@ -20,6 +20,7 @@ import { cubicEasingFn } from '~/utils/easings';
 import { renderLogger } from '~/utils/logger';
 import { EditorPanel } from './EditorPanel';
 import { Preview } from './Preview';
+import { LoadingBar } from './LoadingBar';
 import useViewport from '~/lib/hooks';
 
 import { usePreviewStore } from '~/lib/stores/previews';
@@ -308,6 +309,9 @@ export const Workbench = memo(
     const streaming = useStore(streamingState);
     const { exportChat } = useChatHistory();
     const [isSyncing, setIsSyncing] = useState(false);
+    
+    // Detect first prompt loading state: streaming but no preview yet
+    const isLoading = isStreaming && !hasPreview;
 
     const setSelectedView = (view: WorkbenchViewType) => {
       workbenchStore.currentView.set(view);
@@ -480,6 +484,7 @@ export const Workbench = memo(
                   />
                 </div>
                 <div className="relative flex-1 overflow-hidden">
+                  {isLoading && <LoadingBar isLoading={isLoading} />}
                   <View initial={{ x: '0%' }} animate={{ x: selectedView === 'code' ? '0%' : '-100%' }}>
                     <EditorPanel
                       editorDocument={currentDocument}
@@ -493,6 +498,7 @@ export const Workbench = memo(
                       onEditorChange={onEditorChange}
                       onFileSave={onFileSave}
                       onFileReset={onFileReset}
+                      isLoading={isLoading}
                     />
                   </View>
                   <View

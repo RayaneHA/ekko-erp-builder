@@ -92,14 +92,37 @@ export const Preview = memo(({ setSelectedElement }: PreviewProps) => {
 
   useEffect(() => {
     if (!activePreview) {
+      console.log('[Preview] No active preview available');
       setIframeUrl(undefined);
       setDisplayPath('/');
 
       return;
     }
 
-    const { baseUrl } = activePreview;
-    setIframeUrl(baseUrl);
+    const { baseUrl, ready } = activePreview;
+    
+    console.log('[Preview] Active preview changed:', {
+      baseUrl,
+      ready,
+      port: activePreview.port,
+    });
+    
+    // Extract preview ID from WebContainer URL and use the preview route
+    // This ensures proper handling of WebContainer URLs instead of direct localhost access
+    const match = baseUrl.match(/^https?:\/\/([^.]+)\.local-credentialless\.webcontainer-api\.io/);
+    
+    if (match) {
+      const previewId = match[1];
+      // Use the preview route which properly handles WebContainer URLs
+      const previewRoute = `/webcontainer/preview/${previewId}`;
+      console.log('[Preview] Using preview route:', previewRoute);
+      setIframeUrl(previewRoute);
+    } else {
+      // Fallback to direct URL if it's not a WebContainer URL
+      console.warn('[Preview] Not a WebContainer URL, using direct URL:', baseUrl);
+      setIframeUrl(baseUrl);
+    }
+    
     setDisplayPath('/');
   }, [activePreview]);
 
@@ -701,8 +724,19 @@ export const Preview = memo(({ setSelectedElement }: PreviewProps) => {
                   targetPath = '/' + targetPath;
                 }
 
-                const fullUrl = activePreview.baseUrl + targetPath;
-                setIframeUrl(fullUrl);
+                // Extract preview ID and use the preview route with path
+                const match = activePreview.baseUrl.match(/^https?:\/\/([^.]+)\.local-credentialless\.webcontainer-api\.io/);
+                
+                if (match) {
+                  const previewId = match[1];
+                  // Use the preview route with the target path
+                  setIframeUrl(`/webcontainer/preview/${previewId}${targetPath}`);
+                } else {
+                  // Fallback to direct URL
+                  const fullUrl = activePreview.baseUrl + targetPath;
+                  setIframeUrl(fullUrl);
+                }
+                
                 setDisplayPath(targetPath);
 
                 if (inputRef.current) {
@@ -978,23 +1012,69 @@ export const Preview = memo(({ setSelectedElement }: PreviewProps) => {
                       }}
                     />
 
-                    <iframe
-                      ref={iframeRef}
-                      title="preview"
-                      style={{
-                        border: 'none',
-                        width: isLandscape ? `${selectedWindowSize.height}px` : `${selectedWindowSize.width}px`,
-                        height: isLandscape ? `${selectedWindowSize.width}px` : `${selectedWindowSize.height}px`,
-                        background: 'white',
-                        display: 'block',
-                      }}
-                      src={iframeUrl}
-                      sandbox="allow-scripts allow-forms allow-popups allow-modals allow-storage-access-by-user-activation allow-same-origin"
-                      allow="cross-origin-isolated"
-                    />
+                    {activePreview && !activePreview.ready ? (
+                      <div
+                        style={{
+                          width: isLandscape ? `${selectedWindowSize.height}px` : `${selectedWindowSize.width}px`,
+                          height: isLandscape ? `${selectedWindowSize.width}px` : `${selectedWindowSize.height}px`,
+                          background: 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexDirection: 'column',
+                          gap: '8px',
+                          color: '#666',
+                        }}
+                      >
+                        <div style={{ fontSize: '14px', fontWeight: 500 }}>Server is starting...</div>
+                        <div style={{ fontSize: '12px' }}>Port {activePreview.port}</div>
+                      </div>
+                    ) : iframeUrl ? (
+                      <iframe
+                        ref={iframeRef}
+                        title="preview"
+                        style={{
+                          border: 'none',
+                          width: isLandscape ? `${selectedWindowSize.height}px` : `${selectedWindowSize.width}px`,
+                          height: isLandscape ? `${selectedWindowSize.width}px` : `${selectedWindowSize.height}px`,
+                          background: 'white',
+                          display: 'block',
+                        }}
+                        src={iframeUrl}
+                        sandbox="allow-scripts allow-forms allow-popups allow-modals allow-storage-access-by-user-activation allow-same-origin"
+                        allow="cross-origin-isolated"
+                        onError={() => {
+                          console.error('[Preview] Failed to load iframe');
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: isLandscape ? `${selectedWindowSize.height}px` : `${selectedWindowSize.width}px`,
+                          height: isLandscape ? `${selectedWindowSize.width}px` : `${selectedWindowSize.height}px`,
+                          background: 'white',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexDirection: 'column',
+                          gap: '8px',
+                          color: '#666',
+                        }}
+                      >
+                        <div style={{ fontSize: '14px', fontWeight: 500 }}>No preview available</div>
+                        <div style={{ fontSize: '12px' }}>Start a dev server</div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              ) : (
+              ) : activePreview && !activePreview.ready ? (
+                <div className="flex w-full h-full justify-center items-center bg-bolt-elements-background-depth-1 text-bolt-elements-textPrimary flex-col gap-4">
+                  <div className="text-lg font-medium">Server is starting...</div>
+                  <div className="text-sm text-bolt-elements-textSecondary">
+                    Waiting for the development server to be ready on port {activePreview.port}
+                  </div>
+                </div>
+              ) : iframeUrl ? (
                 <iframe
                   ref={iframeRef}
                   title="preview"
@@ -1002,7 +1082,17 @@ export const Preview = memo(({ setSelectedElement }: PreviewProps) => {
                   src={iframeUrl}
                   sandbox="allow-scripts allow-forms allow-popups allow-modals allow-storage-access-by-user-activation allow-same-origin"
                   allow="geolocation; ch-ua-full-version-list; cross-origin-isolated; screen-wake-lock; publickey-credentials-get; shared-storage-select-url; ch-ua-arch; bluetooth; compute-pressure; ch-prefers-reduced-transparency; deferred-fetch; usb; ch-save-data; publickey-credentials-create; shared-storage; deferred-fetch-minimal; run-ad-auction; ch-ua-form-factors; ch-downlink; otp-credentials; payment; ch-ua; ch-ua-model; ch-ect; autoplay; camera; private-state-token-issuance; accelerometer; ch-ua-platform-version; idle-detection; private-aggregation; interest-cohort; ch-viewport-height; local-fonts; ch-ua-platform; midi; ch-ua-full-version; xr-spatial-tracking; clipboard-read; gamepad; display-capture; keyboard-map; join-ad-interest-group; ch-width; ch-prefers-reduced-motion; browsing-topics; encrypted-media; gyroscope; serial; ch-rtt; ch-ua-mobile; window-management; unload; ch-dpr; ch-prefers-color-scheme; ch-ua-wow64; attribution-reporting; fullscreen; identity-credentials-get; private-state-token-redemption; hid; ch-ua-bitness; storage-access; sync-xhr; ch-device-memory; ch-viewport-width; picture-in-picture; magnetometer; clipboard-write; microphone"
+                  onError={() => {
+                    console.error('[Preview] Failed to load iframe');
+                  }}
                 />
+              ) : (
+                <div className="flex w-full h-full justify-center items-center bg-bolt-elements-background-depth-1 text-bolt-elements-textPrimary flex-col gap-4">
+                  <div className="text-lg font-medium">No preview available</div>
+                  <div className="text-sm text-bolt-elements-textSecondary">
+                    Start a development server to see your preview here
+                  </div>
+                </div>
               )}
               <ScreenshotSelector
                 isSelectionMode={isSelectionMode}
