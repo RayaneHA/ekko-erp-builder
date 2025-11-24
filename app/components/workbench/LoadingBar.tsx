@@ -38,91 +38,25 @@ export const LoadingBar = memo(({ isLoading }: LoadingBarProps) => {
 
       {/* Centered content container */}
       <div className="flex flex-col items-center justify-center gap-12 relative z-10 px-4">
-        {/* Logo Ekko with enhanced animations */}
+        {/* Logo EKKO with enhanced animations */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.7, y: -30, rotateY: -90 }}
-          animate={{ opacity: 1, scale: 1, y: 0, rotateY: 0 }}
+          initial={{ opacity: 0, scale: 0.7, y: -30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="relative"
         >
-          {/* Glowing ring around logo */}
           <motion.div
-            className="absolute inset-0 rounded-2xl"
             animate={{
-              boxShadow: [
-                '0 0 20px rgba(138, 95, 255, 0.3)',
-                '0 0 40px rgba(138, 95, 255, 0.5)',
-                '0 0 20px rgba(138, 95, 255, 0.3)',
-              ],
+              scale: [1, 1.05, 1],
             }}
             transition={{
-              duration: 2,
+              duration: 3,
               repeat: Infinity,
               ease: 'easeInOut',
             }}
-            style={{
-              width: '140%',
-              height: '140%',
-              left: '-20%',
-              top: '-20%',
-            }}
-          />
-          
-          <motion.div
-            animate={{
-              scale: [1, 1.08, 1],
-              rotate: [0, 2, -2, 0],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-            className="w-28 h-28 relative"
+            className="text-white uppercase text-6xl font-bold tracking-wider drop-shadow-2xl"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" className="w-full h-full drop-shadow-2xl">
-              <defs>
-                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#000000" />
-                  <stop offset="50%" stopColor="#1a1a1a" />
-                  <stop offset="100%" stopColor="#000000" />
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                  <feMerge>
-                    <feMergeNode in="coloredBlur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <rect width="240" height="120" fill="url(#logoGradient)" rx="14" />
-              <g transform="translate(120, 28)" filter="url(#glow)">
-                <path
-                  d="M -42 -20 L -42 20 L -30 20 L -30 8 L -18 8 L -18 2 L -30 2 L -30 -2 L -18 -2 L -18 -8 L -30 -8 L -30 -20 Z"
-                  fill="#FFFFFF"
-                  stroke="#FFFFFF"
-                  strokeWidth="0.5"
-                />
-                <path
-                  d="M -18 -20 L -18 20 L -6 20 L -6 2 L 2 -14 L 14 -20 L 10 -14 L 2 2 L 10 14 L 14 8 L 2 2 L 10 20 L -6 20 L -6 2 Z"
-                  fill="#FFFFFF"
-                  stroke="#FFFFFF"
-                  strokeWidth="0.5"
-                />
-              </g>
-              <text
-                x="120"
-                y="92"
-                fontFamily="'Arial', 'Helvetica Neue', Helvetica, sans-serif"
-                fontSize="30"
-                fontWeight="700"
-                fill="#FFFFFF"
-                textAnchor="middle"
-                letterSpacing="4"
-              >
-                EKKO
-              </text>
-            </svg>
+            EKKO
           </motion.div>
         </motion.div>
 

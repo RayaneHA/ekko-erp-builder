@@ -3,7 +3,7 @@
  * Preventing TS checks with files presented in the video for a better presentation.
  */
 import type { JSONValue, Message } from 'ai';
-import React, { type RefCallback, useEffect, useState } from 'react';
+import React, { type RefCallback, useEffect, useState, useRef } from 'react';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Menu } from '~/components/sidebar/Menu.client';
 import { Workbench } from '~/components/workbench/Workbench.client';
@@ -14,11 +14,8 @@ import { getApiKeysFromCookies } from './APIKeyManager';
 import Cookies from 'js-cookie';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import styles from './BaseChat.module.scss';
-import { ImportButtons } from '~/components/chat/chatExportAndImport/ImportButtons';
 import { ExamplePrompts } from '~/components/chat/ExamplePrompts';
-import GitCloneButton from './GitCloneButton';
 import type { ProviderInfo } from '~/types/model';
-import StarterTemplates from './StarterTemplates';
 import type { ActionAlert, SupabaseAlert, DeployAlert, LlmErrorAlertType } from '~/types/actions';
 import DeployChatAlert from '~/components/deploy/DeployAlert';
 import ChatAlert from './ChatAlert';
@@ -144,6 +141,81 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
     const [progressAnnotations, setProgressAnnotations] = useState<ProgressAnnotation[]>([]);
     const expoUrl = useStore(expoUrlAtom);
     const [qrModalOpen, setQrModalOpen] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Helper function to process directory entries recursively (client-side only)
+    const processDirectoryEntry = async (entry: any, path: string = ''): Promise<any[]> => {
+      if (typeof window === 'undefined') return [];
+      
+      const files: any[] = [];
+      
+      if (entry.isFile) {
+        return new Promise((resolve) => {
+          entry.file((file: any) => {
+            // @ts-ignore
+            file.webkitRelativePath = path ? `${path}/${file.name}` : file.name;
+            files.push(file);
+            resolve(files);
+          });
+        });
+      } else if (entry.isDirectory) {
+        const reader = entry.createReader();
+        const entries = await new Promise<any[]>((resolve) => {
+          const entries: any[] = [];
+          const readEntries = () => {
+            reader.readEntries((batch: any[]) => {
+              if (batch.length === 0) {
+                resolve(entries);
+              } else {
+                entries.push(...batch);
+                readEntries();
+              }
+            });
+          };
+          readEntries();
+        });
+
+        for (const subEntry of entries) {
+          const subPath = path ? `${path}/${subEntry.name}` : subEntry.name;
+          const subFiles = await processDirectoryEntry(subEntry, subPath);
+          files.push(...subFiles);
+        }
+      }
+      
+      return files;
+    };
+
+    const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+      if (typeof window === 'undefined') return;
+      
+      e.preventDefault();
+      e.currentTarget.classList.remove('border-accent-500', 'bg-bolt-elements-background-depth-1');
+      
+      const items = Array.from(e.dataTransfer.items);
+      const files: any[] = [];
+      
+      for (const item of items) {
+        if (item.kind === 'file') {
+          const entry = (item as any).webkitGetAsEntry();
+          if (entry) {
+            if (entry.isFile) {
+              const file = await new Promise<any>((resolve) => {
+                entry.file((file: any) => resolve(file));
+              });
+              files.push(file);
+            } else if (entry.isDirectory) {
+              const dirFiles = await processDirectoryEntry(entry, entry.name);
+              files.push(...dirFiles);
+            }
+          }
+        }
+      }
+      
+      // Files/directories dropped but no action taken (as requested)
+      if (files.length > 0) {
+        // Reset for next drop
+      }
+    };
 
     useEffect(() => {
       if (expoUrl) {
@@ -466,15 +538,65 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                   selectedElement={selectedElement}
                   setSelectedElement={setSelectedElement}
                 />
+                {!chatStarted && (
+                  <div className="mt-4 w-full max-w-chat mx-auto">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      webkitdirectory=""
+                      directory=""
+                      className="hidden"
+                      onChange={(e) => {
+                        // Reset input value to allow selecting the same file again
+                        if (e.target.files) {
+                          // Files/directories selected but no action taken (as requested)
+                          e.target.value = '';
+                        }
+                      }}
+                      {...({} as any)}
+                    />
+                    <div
+                      className={classNames(
+                        'relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200',
+                        'border-bolt-elements-borderColor hover:border-accent-500 hover:bg-bolt-elements-background-depth-1',
+                        'bg-bolt-elements-background-depth-2',
+                      )}
+                      onDragEnter={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add('border-accent-500', 'bg-bolt-elements-background-depth-1');
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add('border-accent-500', 'bg-bolt-elements-background-depth-1');
+                      }}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove('border-accent-500', 'bg-bolt-elements-background-depth-1');
+                      }}
+                      onDrop={handleDrop}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        fileInputRef.current?.click();
+                      }}
+                    >
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="i-ph:cloud-arrow-up text-4xl text-bolt-elements-textSecondary" />
+                        <div className="flex flex-col gap-1">
+                          <span className="text-sm font-medium text-bolt-elements-textPrimary">
+                            Drag and drop files or folders here
+                          </span>
+                          <span className="text-xs text-bolt-elements-textTertiary">
+                            or click to browse
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </StickToBottom>
             <div className="flex flex-col justify-center">
-              {!chatStarted && (
-                <div className="flex justify-center gap-2">
-                  {ImportButtons(importChat)}
-                  <GitCloneButton importChat={importChat} />
-                </div>
-              )}
               <div className="flex flex-col gap-5">
                 {!chatStarted &&
                   ExamplePrompts((event, messageInput) => {
